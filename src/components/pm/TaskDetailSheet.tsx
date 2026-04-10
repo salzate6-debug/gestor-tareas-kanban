@@ -61,7 +61,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
         <SheetHeader>
           <SheetTitle className="text-left pr-6">{task.title}</SheetTitle>
           <SheetDescription className="text-left">
-            Created {format(new Date(task.createdAt), "PPP")}
+            Creada el {format(new Date(task.createdAt), "PPP")}
           </SheetDescription>
         </SheetHeader>
 
@@ -70,7 +70,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5 block">
-                Priority
+                Prioridad
               </label>
               <Select
                 value={task.priority}
@@ -93,7 +93,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
             </div>
             <div>
               <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5 flex items-center gap-1">
-                <Calendar className="h-3 w-3" /> Due Date
+                <Calendar className="h-3 w-3" /> Fecha de Vencimiento
               </label>
               <Input
                 type="date"
@@ -107,7 +107,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
           {/* Tags */}
           <div>
             <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5 flex items-center gap-1">
-              <Tag className="h-3 w-3" /> Tags
+              <Tag className="h-3 w-3" /> Etiquetas
             </label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {task.tags.map((tag) => (
@@ -128,7 +128,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
             </div>
             <div className="flex gap-2">
               <Input
-                placeholder="Add tag..."
+                placeholder="Añadir etiqueta..."
                 className="h-8 text-xs"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
@@ -140,7 +140,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
                 }}
               />
               <Button variant="secondary" size="sm" className="h-8 text-xs" onClick={handleAddTag}>
-                Add
+                Añadir
               </Button>
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
           {/* Description */}
           <div>
             <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1.5 block">
-              Description
+              Descripción
             </label>
             {editingDesc ? (
               <div className="space-y-2">
@@ -157,7 +157,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
                   onChange={(e) => setDescDraft(e.target.value)}
                   rows={6}
                   className="text-sm"
-                  placeholder="Write in Markdown..."
+                  placeholder="Escribe en Markdown..."
                   autoFocus
                 />
                 <div className="flex gap-2">
@@ -168,7 +168,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
                       setEditingDesc(false);
                     }}
                   >
-                    Save
+                    Guardar
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setEditingDesc(false)}>
                     Cancel
@@ -186,7 +186,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
                 {task.description ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{task.description}</ReactMarkdown>
                 ) : (
-                  <span className="text-muted-foreground italic">Click to add description...</span>
+                  <span className="text-muted-foreground italic">Haz clic para añadir descripción...</span>
                 )}
               </div>
             )}
@@ -195,7 +195,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
           {/* Comments */}
           <div>
             <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" /> Comments ({task.comments.length})
+              <MessageSquare className="h-3 w-3" /> Comentarios ({task.comments.length})
             </label>
             <div className="space-y-3 mb-3">
               {task.comments.map((c) => (
@@ -209,7 +209,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
             </div>
             <div className="flex gap-2">
               <Input
-                placeholder="Write a comment..."
+                placeholder="Escribe un comentario..."
                 className="h-9 text-sm"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
