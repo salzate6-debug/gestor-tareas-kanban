@@ -14,7 +14,7 @@ export default function ListView({ tasks, onDelete, onOpen }: Props) {
   if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-        <p className="text-sm">No tasks match your filters</p>
+        <p className="text-sm">No hay tareas que coincidan con los filtros</p>
       </div>
     );
   }
@@ -24,11 +24,11 @@ export default function ListView({ tasks, onDelete, onOpen }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-surface-2">
-            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Title</th>
-            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden sm:table-cell">Status</th>
-            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">Priority</th>
-            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Due</th>
-            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Tags</th>
+            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Título</th>
+            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden sm:table-cell">Estado</th>
+            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell">Prioridad</th>
+            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Fecha</th>
+            <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell">Etiquetas</th>
             <th className="px-4 py-2.5 w-10"></th>
           </tr>
         </thead>

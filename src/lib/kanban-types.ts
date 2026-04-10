@@ -25,10 +25,10 @@ export interface Column {
 }
 
 export const COLUMNS: Column[] = [
-  { id: "backlog", title: "Backlog" },
-  { id: "todo", title: "To Do" },
-  { id: "in-progress", title: "In Progress" },
-  { id: "done", title: "Done" },
+  { id: "backlog", title: "Pendiente" },
+  { id: "todo", title: "Por Hacer" },
+  { id: "in-progress", title: "En Progreso" },
+  { id: "done", title: "Completado" },
 ];
 
 export interface BoardData {
@@ -50,11 +50,11 @@ export interface AppState {
 }
 
 export const PRIORITY_CONFIG: Record<Priority, { label: string; colorClass: string; dotClass: string }> = {
-  urgent: { label: "Urgent", colorClass: "bg-priority-urgent/15 text-priority-urgent", dotClass: "bg-priority-urgent" },
-  high: { label: "High", colorClass: "bg-priority-high/15 text-priority-high", dotClass: "bg-priority-high" },
-  medium: { label: "Medium", colorClass: "bg-priority-medium/15 text-priority-medium", dotClass: "bg-priority-medium" },
-  low: { label: "Low", colorClass: "bg-priority-low/15 text-priority-low", dotClass: "bg-priority-low" },
-  none: { label: "None", colorClass: "bg-priority-none/15 text-priority-none", dotClass: "bg-priority-none" },
+  urgent: { label: "Urgente", colorClass: "bg-priority-urgent/15 text-priority-urgent", dotClass: "bg-priority-urgent" },
+  high: { label: "Alta", colorClass: "bg-priority-high/15 text-priority-high", dotClass: "bg-priority-high" },
+  medium: { label: "Media", colorClass: "bg-priority-medium/15 text-priority-medium", dotClass: "bg-priority-medium" },
+  low: { label: "Baja", colorClass: "bg-priority-low/15 text-priority-low", dotClass: "bg-priority-low" },
+  none: { label: "Ninguna", colorClass: "bg-priority-none/15 text-priority-none", dotClass: "bg-priority-none" },
 };
 
 export function createEmptyBoard(): BoardData {
