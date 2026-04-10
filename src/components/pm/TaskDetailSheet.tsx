@@ -171,7 +171,7 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
                     Guardar
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => setEditingDesc(false)}>
-                    Cancel
+                    Cancelar
                   </Button>
                 </div>
               </div>
