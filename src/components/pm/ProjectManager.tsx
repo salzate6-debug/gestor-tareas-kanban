@@ -137,7 +137,7 @@ export default function ProjectManager() {
               <div className="relative hidden sm:block">
                 <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search..."
+                  placeholder="Buscar..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="h-8 w-48 pl-8 text-xs"
@@ -153,7 +153,7 @@ export default function ProjectManager() {
                   onClick={() => setView("board")}
                 >
                   <LayoutGrid className="h-3.5 w-3.5" />
-                  <span className="hidden md:inline text-xs">Board</span>
+                  <span className="hidden md:inline text-xs">Tablero</span>
                 </Button>
                 <Button
                   variant={view === "list" ? "secondary" : "ghost"}
@@ -162,7 +162,7 @@ export default function ProjectManager() {
                   onClick={() => setView("list")}
                 >
                   <List className="h-3.5 w-3.5" />
-                  <span className="hidden md:inline text-xs">List</span>
+                  <span className="hidden md:inline text-xs">Lista</span>
                 </Button>
               </div>
 
@@ -176,7 +176,7 @@ export default function ProjectManager() {
             <div className="relative sm:hidden flex-1 min-w-[150px]">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder="Buscar..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="h-8 pl-8 text-xs"
@@ -190,7 +190,7 @@ export default function ProjectManager() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Priorities</SelectItem>
+                  <SelectItem value="all">Todas las Prioridades</SelectItem>
                   {Object.entries(PRIORITY_CONFIG).map(([key, val]) => (
                     <SelectItem key={key} value={key}>{val.label}</SelectItem>
                   ))}
@@ -202,7 +202,7 @@ export default function ProjectManager() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
+                    <SelectItem value="all">Todas las Etiquetas</SelectItem>
                     {allTags.map((tag) => (
                       <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                     ))}
@@ -220,14 +220,14 @@ export default function ProjectManager() {
                     setTagFilter("all");
                   }}
                 >
-                  Clear
+                  Limpiar
                 </Button>
               )}
             </div>
 
             <div className="ml-auto flex items-center gap-2.5 shrink-0">
               <span className="text-[11px] text-muted-foreground whitespace-nowrap">
-                {doneTasks}/{totalTasks} done
+                {doneTasks}/{totalTasks} completadas
               </span>
               <Progress value={progress} className="w-24 h-1.5" />
             </div>
