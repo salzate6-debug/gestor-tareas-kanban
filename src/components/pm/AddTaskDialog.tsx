@@ -67,22 +67,22 @@ export default function AddTaskDialog({ onAdd }: Props) {
       <DialogTrigger asChild>
         <Button size="sm" className="gap-1.5">
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">New Task</span>
+          <span className="hidden sm:inline">Nueva Tarea</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Task</DialogTitle>
+          <DialogTitle>Añadir Tarea</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <Input
-            placeholder="Task title"
+            placeholder="Título de la tarea"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
           />
           <Textarea
-            placeholder="Description (supports Markdown)"
+            placeholder="Descripción (soporta Markdown)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
@@ -93,11 +93,11 @@ export default function AddTaskDialog({ onAdd }: Props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="urgent">🔴 Urgent</SelectItem>
-                <SelectItem value="high">🟠 High</SelectItem>
-                <SelectItem value="medium">🟡 Medium</SelectItem>
-                <SelectItem value="low">🟢 Low</SelectItem>
-                <SelectItem value="none">⚪ None</SelectItem>
+                <SelectItem value="urgent">🔴 Urgente</SelectItem>
+                <SelectItem value="high">🟠 Alta</SelectItem>
+                <SelectItem value="medium">🟡 Media</SelectItem>
+                <SelectItem value="low">🟢 Baja</SelectItem>
+                <SelectItem value="none">⚪ Ninguna</SelectItem>
               </SelectContent>
             </Select>
             <Select value={column} onValueChange={(v) => setColumn(v as ColumnId)}>
@@ -121,7 +121,7 @@ export default function AddTaskDialog({ onAdd }: Props) {
           <div>
             <div className="flex gap-2">
               <Input
-                placeholder="Add tag..."
+                placeholder="Añadir etiqueta..."
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -132,7 +132,7 @@ export default function AddTaskDialog({ onAdd }: Props) {
                 }}
               />
               <Button type="button" variant="secondary" size="sm" onClick={addTag}>
-                Add
+                Añadir
               </Button>
             </div>
             {tags.length > 0 && (
@@ -152,7 +152,7 @@ export default function AddTaskDialog({ onAdd }: Props) {
             )}
           </div>
           <Button type="submit" className="w-full" disabled={!title.trim()}>
-            Create Task
+            Crear Tarea
           </Button>
         </form>
       </DialogContent>
