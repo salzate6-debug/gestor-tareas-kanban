@@ -105,34 +105,34 @@ export function useAppState() {
         comments: [],
         createdAt: new Date().toISOString(),
       };
-      updateBoard(activeProject.id, (board) => ({
+      updateBoard((board) => ({
         ...board,
         [columnId]: [...(board[columnId] || []), task],
       }));
     },
-    [activeProject.id, updateBoard]
+    [updateBoard]
   );
 
   const deleteTask = useCallback(
     (columnId: ColumnId, taskId: string) => {
-      updateBoard(activeProject.id, (board) => ({
+      updateBoard((board) => ({
         ...board,
         [columnId]: board[columnId].filter((t) => t.id !== taskId),
       }));
     },
-    [activeProject.id, updateBoard]
+    [updateBoard]
   );
 
   const updateTask = useCallback(
     (columnId: ColumnId, taskId: string, updates: Partial<Task>) => {
-      updateBoard(activeProject.id, (board) => ({
+      updateBoard((board) => ({
         ...board,
         [columnId]: board[columnId].map((t) =>
           t.id === taskId ? { ...t, ...updates } : t
         ),
       }));
     },
-    [activeProject.id, updateBoard]
+    [updateBoard]
   );
 
   const addComment = useCallback(
@@ -142,27 +142,36 @@ export function useAppState() {
         text,
         createdAt: new Date().toISOString(),
       };
-      updateBoard(activeProject.id, (board) => ({
+      updateBoard((board) => ({
         ...board,
         [columnId]: board[columnId].map((t) =>
           t.id === taskId ? { ...t, comments: [...t.comments, comment] } : t
         ),
       }));
     },
-    [activeProject.id, updateBoard]
+    [updateBoard]
   );
 
   const moveTask = useCallback(
-    (sourceCol: string, destCol: string, sourceIdx: number, destIdx: number) => {
-      updateBoard(activeProject.id, (board) => {
-        const sourceTasks = [...board[sourceCol]];
-        const destTasks = sourceCol === destCol ? sourceTasks : [...board[destCol]];
-        const [moved] = sourceTasks.splice(sourceIdx, 1);
+    (taskId: string, sourceCol: string, destCol: string, destIdx: number) => {
+      updateBoard((board) => {
+        const sourceTasks = [...(board[sourceCol] || [])];
+        const taskIndex = sourceTasks.findIndex((t) => t.id === taskId);
+        if (taskIndex === -1) return board;
+
+        const [moved] = sourceTasks.splice(taskIndex, 1);
+
+        if (sourceCol === destCol) {
+          sourceTasks.splice(destIdx, 0, moved);
+          return { ...board, [sourceCol]: sourceTasks };
+        }
+
+        const destTasks = [...(board[destCol] || [])];
         destTasks.splice(destIdx, 0, moved);
         return { ...board, [sourceCol]: sourceTasks, [destCol]: destTasks };
       });
     },
-    [activeProject.id, updateBoard]
+    [updateBoard]
   );
 
   // Progress
