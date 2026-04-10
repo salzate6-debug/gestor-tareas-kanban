@@ -1,5 +1,5 @@
-import KanbanBoard from "@/components/kanban/KanbanBoard";
+import ProjectManager from "@/components/pm/ProjectManager";
 
 export default function Index() {
-  return <KanbanBoard />;
+  return <ProjectManager />;
 }
