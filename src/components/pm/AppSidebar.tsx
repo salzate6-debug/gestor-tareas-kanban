@@ -71,7 +71,7 @@ export default function AppSidebar({
         {!collapsed && (
           <div className="flex items-center gap-2">
             <FolderKanban className="h-5 w-5 text-primary" />
-            <span className="text-sm font-bold text-foreground tracking-tight">Projects</span>
+            <span className="text-sm font-bold text-foreground tracking-tight">Proyectos</span>
           </div>
         )}
         <Button
@@ -124,12 +124,12 @@ export default function AppSidebar({
           <DialogTrigger asChild>
             <Button variant="ghost" size="sm" className={cn("w-full justify-start gap-2", collapsed && "justify-center px-0")}>
               <Plus className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>New Project</span>}
+              {!collapsed && <span>Nuevo Proyecto</span>}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>Create Project</DialogTitle>
+              <DialogTitle>Crear Proyecto</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
@@ -147,14 +147,14 @@ export default function AppSidebar({
                 ))}
               </div>
               <Input
-                placeholder="Project name"
+                placeholder="Nombre del proyecto"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAdd()}
                 autoFocus
               />
               <Button onClick={handleAdd} className="w-full" disabled={!newName.trim()}>
-                Create
+                Crear
               </Button>
             </div>
           </DialogContent>
@@ -167,7 +167,7 @@ export default function AppSidebar({
           onClick={() => onSetTheme(nextTheme)}
         >
           {themeIcon}
-          {!collapsed && <span className="capitalize">{theme}</span>}
+          {!collapsed && <span className="capitalize">{theme === "light" ? "Claro" : theme === "dark" ? "Oscuro" : "Sistema"}</span>}
         </Button>
       </div>
     </aside>
