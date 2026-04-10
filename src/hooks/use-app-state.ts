@@ -6,7 +6,7 @@ const STORAGE_KEY = "pm-app-state";
 
 function getDefaultState(): AppState {
   const personal = createProject("Personal", "🏠");
-  const work = createProject("Work", "💼");
+  const work = createProject("Trabajo", "💼");
   return {
     projects: [personal, work],
     activeProjectId: personal.id,
