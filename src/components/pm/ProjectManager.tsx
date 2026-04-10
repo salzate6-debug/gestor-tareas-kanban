@@ -83,10 +83,11 @@ export default function ProjectManager() {
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
+    const taskId = result.draggableId;
     moveTask(
+      taskId,
       result.source.droppableId,
       result.destination.droppableId,
-      result.source.index,
       result.destination.index
     );
   };
