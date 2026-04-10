@@ -60,6 +60,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        priority: {
+          high: "hsl(var(--priority-high))",
+          medium: "hsl(var(--priority-medium))",
+          low: "hsl(var(--priority-low))",
+        },
+        column: {
+          backlog: "hsl(var(--column-backlog))",
+          progress: "hsl(var(--column-progress))",
+          completed: "hsl(var(--column-completed))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
