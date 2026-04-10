@@ -78,13 +78,17 @@ export function useAppState() {
   }, []);
 
   const updateBoard = useCallback(
-    (projectId: string, updater: (board: Record<string, Task[]>) => Record<string, Task[]>) => {
-      setState((s) => ({
-        ...s,
-        projects: s.projects.map((p) =>
-          p.id === projectId ? { ...p, board: updater(p.board) } : p
-        ),
-      }));
+    (updater: (board: Record<string, Task[]>) => Record<string, Task[]>) => {
+      setState((s) => {
+        const proj = s.projects.find((p) => p.id === s.activeProjectId) || s.projects[0];
+        if (!proj) return s;
+        return {
+          ...s,
+          projects: s.projects.map((p) =>
+            p.id === proj.id ? { ...p, board: updater(p.board) } : p
+          ),
+        };
+      });
     },
     []
   );
