@@ -42,7 +42,7 @@ export default function KanbanColumn({ id, title, tasks, onDelete, onOpenTask }:
               {tasks.length === 0 && !snapshot.isDraggingOver && (
                 <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                   <ClipboardList className="h-7 w-7 mb-1.5 opacity-30" />
-                  <p className="text-[11px]">No tasks yet</p>
+                  <p className="text-[11px]">Sin tareas aún</p>
                 </div>
               )}
               {tasks.map((task, i) => (
