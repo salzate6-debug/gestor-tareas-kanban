@@ -174,16 +174,6 @@ export default function AppSidebar({
           </DialogContent>
         </Dialog>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn("w-full justify-start gap-2", collapsed && "justify-center px-0")}
-          onClick={() => onSetTheme(nextTheme)}
-          title="Cambiar tema rápido"
-        >
-          {themeIcon}
-          {!collapsed && <span className="capitalize">{theme === "light" ? "Claro" : theme === "dark" ? "Oscuro" : "Sistema"}</span>}
-        </Button>
 
         {/* Profile / Settings */}
         <button
