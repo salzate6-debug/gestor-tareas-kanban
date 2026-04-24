@@ -52,14 +52,6 @@ export default function ProjectManager() {
 
   const [view, setView] = useState<ViewMode>("board");
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
   const [search, setSearch] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [tagFilter, setTagFilter] = useState<string>("all");
