@@ -8,6 +8,7 @@ import {
   Moon,
   Monitor,
   FolderKanban,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Project, AppState } from "@/lib/kanban-types";
 import { cn } from "@/lib/utils";
 
@@ -27,20 +29,24 @@ interface Props {
   projects: Project[];
   activeProjectId: string;
   theme: AppState["theme"];
+  profile: { display_name: string; avatar_url: string | null };
   onSelectProject: (id: string) => void;
   onAddProject: (name: string, emoji: string) => void;
   onDeleteProject: (id: string) => void;
   onSetTheme: (theme: AppState["theme"]) => void;
+  onOpenSettings: () => void;
 }
 
 export default function AppSidebar({
   projects,
   activeProjectId,
   theme,
+  profile,
   onSelectProject,
   onAddProject,
   onDeleteProject,
   onSetTheme,
+  onOpenSettings,
 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -58,6 +64,14 @@ export default function AppSidebar({
   const themeIcon =
     theme === "dark" ? <Moon className="h-4 w-4" /> : theme === "light" ? <Sun className="h-4 w-4" /> : <Monitor className="h-4 w-4" />;
   const nextTheme = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
+
+  const initials = (profile.display_name || "?")
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <aside
@@ -165,10 +179,36 @@ export default function AppSidebar({
           size="sm"
           className={cn("w-full justify-start gap-2", collapsed && "justify-center px-0")}
           onClick={() => onSetTheme(nextTheme)}
+          title="Cambiar tema rápido"
         >
           {themeIcon}
           {!collapsed && <span className="capitalize">{theme === "light" ? "Claro" : theme === "dark" ? "Oscuro" : "Sistema"}</span>}
         </Button>
+
+        {/* Profile / Settings */}
+        <button
+          onClick={onOpenSettings}
+          className={cn(
+            "mt-1 flex w-full items-center gap-2 rounded-md p-1.5 text-left transition-colors hover:bg-accent",
+            collapsed && "justify-center"
+          )}
+          title="Configuración"
+        >
+          <Avatar className="h-7 w-7 shrink-0">
+            {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile.display_name} />}
+            <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <>
+              <span className="flex-1 truncate text-xs font-medium text-foreground">
+                {profile.display_name || "Mi cuenta"}
+              </span>
+              <Settings className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );

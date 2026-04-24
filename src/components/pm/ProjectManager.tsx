@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
-import { Search, LayoutGrid, List, Filter } from "lucide-react";
+import { Search, LayoutGrid, List, Filter, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -11,25 +11,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppState } from "@/hooks/use-app-state";
+import { useKanbanData } from "@/hooks/use-kanban-data";
 import { COLUMNS, PRIORITY_CONFIG } from "@/lib/kanban-types";
-import type { Task, ColumnId, Priority } from "@/lib/kanban-types";
+import type { Task, ColumnId } from "@/lib/kanban-types";
 import AppSidebar from "./AppSidebar";
 import KanbanColumn from "./KanbanColumn";
 import ListView from "./ListView";
 import AddTaskDialog from "./AddTaskDialog";
 import TaskDetailSheet from "./TaskDetailSheet";
+import SettingsDialog from "./SettingsDialog";
 
 type ViewMode = "board" | "list";
 
 export default function ProjectManager() {
   const {
     state,
+    loading,
     activeProject,
+    profile,
+    preferences,
     setActiveProject,
     addProject,
     deleteProject,
     setTheme,
+    updatePreferences,
+    updateProfile,
+    deleteAccount,
     addTask,
     deleteTask,
     updateTask,
@@ -41,9 +48,10 @@ export default function ProjectManager() {
     progress,
     totalTasks,
     doneTasks,
-  } = useAppState();
+  } = useKanbanData();
 
   const [view, setView] = useState<ViewMode>("board");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [tagFilter, setTagFilter] = useState<string>("all");
@@ -115,16 +123,26 @@ export default function ProjectManager() {
 
   const hasFilters = search || priorityFilter !== "all" || tagFilter !== "all";
 
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <AppSidebar
         projects={state.projects}
         activeProjectId={state.activeProjectId}
         theme={state.theme}
+        profile={profile}
         onSelectProject={setActiveProject}
         onAddProject={addProject}
         onDeleteProject={deleteProject}
         onSetTheme={setTheme}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -271,6 +289,16 @@ export default function ProjectManager() {
         onAddSubtasks={addSubtasks}
         onToggleSubtask={toggleSubtask}
         onDeleteSubtask={deleteSubtask}
+      />
+
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        profile={profile}
+        preferences={preferences}
+        onUpdateProfile={async (name) => { await updateProfile(name); }}
+        onUpdatePreferences={async (patch) => { await updatePreferences(patch); }}
+        onDeleteAccount={async () => { await deleteAccount(); }}
       />
     </div>
   );
