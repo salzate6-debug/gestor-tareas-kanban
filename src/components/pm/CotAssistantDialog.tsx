@@ -33,7 +33,7 @@ async function fetchCoTSteps(title: string): Promise<CotResponse> {
       // ngrok free tier requires this header to bypass the browser warning page
       "ngrok-skip-browser-warning": "true",
     },
-    body: JSON.stringify({ titulo: title, title }),
+    body: JSON.stringify({ title }),
   });
 
   if (!res.ok) {
@@ -98,16 +98,16 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error desconocido";
       console.error("[CoT] Error al contactar el servidor:", err);
-      const isLikelyCors = message.includes("Failed to fetch") || message.includes("NetworkError");
+      const isNetwork = message.includes("Failed to fetch") || message.includes("NetworkError");
       setErrorMsg(
-        isLikelyCors
-          ? "No se pudo conectar al servidor de razonamiento. Es probable un error de CORS: tu servidor debe responder con el header 'Access-Control-Allow-Origin: *' (o el origen de esta app) y manejar las peticiones OPTIONS preflight."
-          : `No se pudo obtener la respuesta del servidor: ${message}`
+        isNetwork
+          ? "Error de conexión con el motor de IA en Colab"
+          : `Error de conexión con el motor de IA en Colab: ${message}`
       );
       setPhase("error");
       toast({
-        title: "Error en el Asistente CoT",
-        description: isLikelyCors ? "Posible error de CORS. Revisa la consola." : message,
+        title: "Error de conexión",
+        description: "Error de conexión con el motor de IA en Colab",
         variant: "destructive",
       });
     }
