@@ -129,10 +129,12 @@ export default function ProjectManager() {
         projects={state.projects}
         activeProjectId={state.activeProjectId}
         theme={state.theme}
+        profile={profile}
         onSelectProject={setActiveProject}
         onAddProject={addProject}
         onDeleteProject={deleteProject}
         onSetTheme={setTheme}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
