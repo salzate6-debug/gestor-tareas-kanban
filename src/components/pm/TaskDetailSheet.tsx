@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, MessageSquare, Send, Tag, X } from "lucide-react";
+import { Calendar, MessageSquare, Send, Tag, X, Brain, CheckSquare, Square, Trash2 } from "lucide-react";
 import type { Task, ColumnId, Priority } from "@/lib/kanban-types";
 import { PRIORITY_CONFIG } from "@/lib/kanban-types";
+import CotAssistantDialog from "./CotAssistantDialog";
 
 interface Props {
   task: Task | null;
@@ -29,17 +30,22 @@ interface Props {
   onClose: () => void;
   onUpdate: (columnId: ColumnId, taskId: string, updates: Partial<Task>) => void;
   onAddComment: (columnId: ColumnId, taskId: string, text: string) => void;
+  onAddSubtasks: (columnId: ColumnId, taskId: string, texts: string[]) => void;
+  onToggleSubtask: (columnId: ColumnId, taskId: string, subtaskId: string) => void;
+  onDeleteSubtask: (columnId: ColumnId, taskId: string, subtaskId: string) => void;
 }
 
-export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onAddComment }: Props) {
+export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onAddComment, onAddSubtasks, onToggleSubtask, onDeleteSubtask }: Props) {
   const [commentText, setCommentText] = useState("");
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState("");
   const [tagInput, setTagInput] = useState("");
+  const [cotOpen, setCotOpen] = useState(false);
 
   if (!task || !columnId) return null;
 
   const p = PRIORITY_CONFIG[task.priority];
+  const subtasks = task.subtasks || [];
 
   const handleAddComment = () => {
     if (!commentText.trim()) return;
