@@ -1,16 +1,20 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import type { Task, ColumnId, Priority } from "@/lib/kanban-types";
 import { PRIORITY_CONFIG, COLUMNS } from "@/lib/kanban-types";
-import { Trash2, Calendar, MessageSquare } from "lucide-react";
+import { Trash2, Calendar, MessageSquare, Brain } from "lucide-react";
 import { format, isPast, isToday } from "date-fns";
+import CotAssistantDialog from "./CotAssistantDialog";
 
 interface Props {
   tasks: { task: Task; columnId: ColumnId }[];
   onDelete: (columnId: ColumnId, taskId: string) => void;
   onOpen: (task: Task, columnId: ColumnId) => void;
+  onAddSubtasks: (columnId: ColumnId, taskId: string, texts: string[]) => void;
 }
 
-export default function ListView({ tasks, onDelete, onOpen }: Props) {
+export default function ListView({ tasks, onDelete, onOpen, onAddSubtasks }: Props) {
+  const [cotTask, setCotTask] = useState<{ task: Task; columnId: ColumnId } | null>(null);
   if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -86,21 +90,42 @@ export default function ListView({ tasks, onDelete, onOpen }: Props) {
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(columnId, task.id);
-                    }}
-                    className="rounded p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1 justify-end">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCotTask({ task, columnId });
+                      }}
+                      title="Planificar Pasos (CoT)"
+                      className="rounded p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-primary/10 hover:text-primary transition-opacity"
+                    >
+                      <Brain className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(columnId, task.id);
+                      }}
+                      className="rounded p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </td>
               </motion.tr>
             );
           })}
         </tbody>
       </table>
+
+      <CotAssistantDialog
+        open={!!cotTask}
+        onOpenChange={(open) => !open && setCotTask(null)}
+        taskTitle={cotTask?.task.title || ""}
+        onConvertToSubtasks={(steps) => {
+          if (cotTask) onAddSubtasks(cotTask.columnId, cotTask.task.id, steps);
+        }}
+      />
     </div>
   );
 }
