@@ -179,10 +179,36 @@ export default function AppSidebar({
           size="sm"
           className={cn("w-full justify-start gap-2", collapsed && "justify-center px-0")}
           onClick={() => onSetTheme(nextTheme)}
+          title="Cambiar tema rápido"
         >
           {themeIcon}
           {!collapsed && <span className="capitalize">{theme === "light" ? "Claro" : theme === "dark" ? "Oscuro" : "Sistema"}</span>}
         </Button>
+
+        {/* Profile / Settings */}
+        <button
+          onClick={onOpenSettings}
+          className={cn(
+            "mt-1 flex w-full items-center gap-2 rounded-md p-1.5 text-left transition-colors hover:bg-accent",
+            collapsed && "justify-center"
+          )}
+          title="Configuración"
+        >
+          <Avatar className="h-7 w-7 shrink-0">
+            {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile.display_name} />}
+            <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <>
+              <span className="flex-1 truncate text-xs font-medium text-foreground">
+                {profile.display_name || "Mi cuenta"}
+              </span>
+              <Settings className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );
