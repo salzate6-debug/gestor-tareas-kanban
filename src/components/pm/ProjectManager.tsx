@@ -34,6 +34,9 @@ export default function ProjectManager() {
     deleteTask,
     updateTask,
     addComment,
+    addSubtasks,
+    toggleSubtask,
+    deleteSubtask,
     moveTask,
     progress,
     totalTasks,
@@ -248,12 +251,13 @@ export default function ProjectManager() {
                     tasks={filteredBoard[col.id] || []}
                     onDelete={deleteTask}
                     onOpenTask={handleOpenTask}
+                    onAddSubtasks={addSubtasks}
                   />
                 ))}
               </div>
             </DragDropContext>
           ) : (
-            <ListView tasks={flatTasks} onDelete={deleteTask} onOpen={handleOpenTask} />
+            <ListView tasks={flatTasks} onDelete={deleteTask} onOpen={handleOpenTask} onAddSubtasks={addSubtasks} />
           )}
         </main>
       </div>
@@ -264,6 +268,9 @@ export default function ProjectManager() {
         onClose={() => setSelectedTask(null)}
         onUpdate={updateTask}
         onAddComment={addComment}
+        onAddSubtasks={addSubtasks}
+        onToggleSubtask={toggleSubtask}
+        onDeleteSubtask={deleteSubtask}
       />
     </div>
   );
