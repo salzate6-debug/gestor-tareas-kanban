@@ -288,9 +288,9 @@ export default function ProjectManager() {
         onOpenChange={setSettingsOpen}
         profile={profile}
         preferences={preferences}
-        onUpdateProfile={updateProfile}
-        onUpdatePreferences={updatePreferences}
-        onDeleteAccount={deleteAccount}
+        onUpdateProfile={async (name) => { await updateProfile(name); }}
+        onUpdatePreferences={async (patch) => { await updatePreferences(patch); }}
+        onDeleteAccount={async () => { await deleteAccount(); }}
       />
     </div>
   );
