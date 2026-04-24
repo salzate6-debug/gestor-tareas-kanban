@@ -103,6 +103,7 @@ export function useAppState() {
         tags,
         dueDate,
         comments: [],
+        subtasks: [],
         createdAt: new Date().toISOString(),
       };
       updateBoard((board) => ({
