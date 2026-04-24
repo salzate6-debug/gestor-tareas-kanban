@@ -8,6 +8,7 @@ import {
   Moon,
   Monitor,
   FolderKanban,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Project, AppState } from "@/lib/kanban-types";
 import { cn } from "@/lib/utils";
 
@@ -27,20 +29,24 @@ interface Props {
   projects: Project[];
   activeProjectId: string;
   theme: AppState["theme"];
+  profile: { display_name: string; avatar_url: string | null };
   onSelectProject: (id: string) => void;
   onAddProject: (name: string, emoji: string) => void;
   onDeleteProject: (id: string) => void;
   onSetTheme: (theme: AppState["theme"]) => void;
+  onOpenSettings: () => void;
 }
 
 export default function AppSidebar({
   projects,
   activeProjectId,
   theme,
+  profile,
   onSelectProject,
   onAddProject,
   onDeleteProject,
   onSetTheme,
+  onOpenSettings,
 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -58,6 +64,14 @@ export default function AppSidebar({
   const themeIcon =
     theme === "dark" ? <Moon className="h-4 w-4" /> : theme === "light" ? <Sun className="h-4 w-4" /> : <Monitor className="h-4 w-4" />;
   const nextTheme = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
+
+  const initials = (profile.display_name || "?")
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <aside
