@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Loader2, FolderKanban, Mail, Lock, User as UserIcon, Github } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,11 +84,15 @@ export default function Auth() {
   };
 
   const handleGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) toast({ title: "Error con Google", description: error.message, variant: "destructive" });
+    if (result.redirected) return;
+    if (result.error) {
+      toast({ title: "Error con Google", description: result.error.message, variant: "destructive" });
+      return;
+    }
+    navigate("/", { replace: true });
   };
 
   if (authLoading || session) {
