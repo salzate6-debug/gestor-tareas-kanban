@@ -282,6 +282,16 @@ export default function ProjectManager() {
         onToggleSubtask={toggleSubtask}
         onDeleteSubtask={deleteSubtask}
       />
+
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        profile={profile}
+        preferences={preferences}
+        onUpdateProfile={updateProfile}
+        onUpdatePreferences={updatePreferences}
+        onDeleteAccount={deleteAccount}
+      />
     </div>
   );
 }
