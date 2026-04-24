@@ -231,7 +231,7 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
             <BookOpen className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-0.5">
-                Fuente oficial
+                Fuente de contexto recuperada
               </p>
               <p className="text-xs text-foreground/80 leading-relaxed break-words">
                 {groundingSource}
