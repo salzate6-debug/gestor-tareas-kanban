@@ -123,6 +123,14 @@ export default function ProjectManager() {
 
   const hasFilters = search || priorityFilter !== "all" || tagFilter !== "all";
 
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <AppSidebar
