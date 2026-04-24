@@ -121,6 +121,8 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
       clearTimers();
       setPhase("idle");
       setSteps([]);
+      setGroundingSource("");
+      setErrorMsg("");
       setVisibleCount(0);
     }
     return clearTimers;
@@ -201,8 +203,42 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
                 )}
               </motion.ol>
             )}
+
+            {phase === "error" && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-10 gap-3 text-center"
+              >
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <AlertCircle className="h-5 w-5" />
+                </span>
+                <p className="text-sm text-foreground font-medium">No se pudo generar el razonamiento</p>
+                <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">{errorMsg}</p>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
+
+        {phase === "done" && groundingSource && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex gap-2.5 rounded-lg border border-primary/20 bg-primary/5 p-3 mt-1"
+          >
+            <BookOpen className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-0.5">
+                Fuente oficial
+              </p>
+              <p className="text-xs text-foreground/80 leading-relaxed break-words">
+                {groundingSource}
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {phase === "done" && (
           <motion.div
@@ -217,6 +253,19 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
             <Button size="sm" className="ml-auto gap-1.5" onClick={handleConvert}>
               <ListPlus className="h-3.5 w-3.5" />
               Convertir en Subtareas
+            </Button>
+          </motion.div>
+        )}
+
+        {phase === "error" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex gap-2 pt-2 border-t"
+          >
+            <Button size="sm" className="ml-auto gap-1.5" onClick={runAssistant}>
+              <RotateCcw className="h-3.5 w-3.5" />
+              Reintentar
             </Button>
           </motion.div>
         )}
