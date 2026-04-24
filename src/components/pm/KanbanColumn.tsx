@@ -17,9 +17,10 @@ interface Props {
   tasks: Task[];
   onDelete: (columnId: ColumnId, taskId: string) => void;
   onOpenTask: (task: Task, columnId: ColumnId) => void;
+  onAddSubtasks: (columnId: ColumnId, taskId: string, texts: string[]) => void;
 }
 
-export default function KanbanColumn({ id, title, tasks, onDelete, onOpenTask }: Props) {
+export default function KanbanColumn({ id, title, tasks, onDelete, onOpenTask, onAddSubtasks }: Props) {
   return (
     <div className="flex flex-col rounded-xl bg-surface-2 p-2.5 min-h-[250px]">
       <div className="mb-2.5 flex items-center gap-2 px-1.5 py-1">
@@ -53,6 +54,7 @@ export default function KanbanColumn({ id, title, tasks, onDelete, onOpenTask }:
                   columnId={id}
                   onDelete={onDelete}
                   onOpen={onOpenTask}
+                  onAddSubtasks={onAddSubtasks}
                 />
               ))}
             </AnimatePresence>

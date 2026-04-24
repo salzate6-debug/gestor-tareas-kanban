@@ -19,7 +19,17 @@ function loadState(): AppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as AppState;
-      if (parsed.projects?.length) return parsed;
+      if (parsed.projects?.length) {
+        // Migration: ensure every task has subtasks array
+        parsed.projects.forEach((p) => {
+          Object.values(p.board).forEach((col) => {
+            col.forEach((t: Task) => {
+              if (!Array.isArray((t as Task).subtasks)) (t as Task).subtasks = [];
+            });
+          });
+        });
+        return parsed;
+      }
     }
   } catch {}
   return getDefaultState();
@@ -103,6 +113,7 @@ export function useAppState() {
         tags,
         dueDate,
         comments: [],
+        subtasks: [],
         createdAt: new Date().toISOString(),
       };
       updateBoard((board) => ({
@@ -152,6 +163,49 @@ export function useAppState() {
     [updateBoard]
   );
 
+  const addSubtasks = useCallback(
+    (columnId: ColumnId, taskId: string, texts: string[]) => {
+      const newSubs = texts.map((text) => ({
+        id: crypto.randomUUID(),
+        text,
+        done: false,
+      }));
+      updateBoard((board) => ({
+        ...board,
+        [columnId]: board[columnId].map((t) =>
+          t.id === taskId ? { ...t, subtasks: [...(t.subtasks || []), ...newSubs] } : t
+        ),
+      }));
+    },
+    [updateBoard]
+  );
+
+  const toggleSubtask = useCallback(
+    (columnId: ColumnId, taskId: string, subtaskId: string) => {
+      updateBoard((board) => ({
+        ...board,
+        [columnId]: board[columnId].map((t) =>
+          t.id === taskId
+            ? { ...t, subtasks: t.subtasks.map((s) => (s.id === subtaskId ? { ...s, done: !s.done } : s)) }
+            : t
+        ),
+      }));
+    },
+    [updateBoard]
+  );
+
+  const deleteSubtask = useCallback(
+    (columnId: ColumnId, taskId: string, subtaskId: string) => {
+      updateBoard((board) => ({
+        ...board,
+        [columnId]: board[columnId].map((t) =>
+          t.id === taskId ? { ...t, subtasks: t.subtasks.filter((s) => s.id !== subtaskId) } : t
+        ),
+      }));
+    },
+    [updateBoard]
+  );
+
   const moveTask = useCallback(
     (taskId: string, sourceCol: string, destCol: string, destIdx: number) => {
       updateBoard((board) => {
@@ -190,6 +244,9 @@ export function useAppState() {
     deleteTask,
     updateTask,
     addComment,
+    addSubtasks,
+    toggleSubtask,
+    deleteSubtask,
     moveTask,
     progress,
     totalTasks,

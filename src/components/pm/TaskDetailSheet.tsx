@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, MessageSquare, Send, Tag, X } from "lucide-react";
+import { Calendar, MessageSquare, Send, Tag, X, Brain, CheckSquare, Square, Trash2 } from "lucide-react";
 import type { Task, ColumnId, Priority } from "@/lib/kanban-types";
 import { PRIORITY_CONFIG } from "@/lib/kanban-types";
+import CotAssistantDialog from "./CotAssistantDialog";
 
 interface Props {
   task: Task | null;
@@ -29,17 +30,22 @@ interface Props {
   onClose: () => void;
   onUpdate: (columnId: ColumnId, taskId: string, updates: Partial<Task>) => void;
   onAddComment: (columnId: ColumnId, taskId: string, text: string) => void;
+  onAddSubtasks: (columnId: ColumnId, taskId: string, texts: string[]) => void;
+  onToggleSubtask: (columnId: ColumnId, taskId: string, subtaskId: string) => void;
+  onDeleteSubtask: (columnId: ColumnId, taskId: string, subtaskId: string) => void;
 }
 
-export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onAddComment }: Props) {
+export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onAddComment, onAddSubtasks, onToggleSubtask, onDeleteSubtask }: Props) {
   const [commentText, setCommentText] = useState("");
   const [editingDesc, setEditingDesc] = useState(false);
   const [descDraft, setDescDraft] = useState("");
   const [tagInput, setTagInput] = useState("");
+  const [cotOpen, setCotOpen] = useState(false);
 
   if (!task || !columnId) return null;
 
   const p = PRIORITY_CONFIG[task.priority];
+  const subtasks = task.subtasks || [];
 
   const handleAddComment = () => {
     if (!commentText.trim()) return;
@@ -192,6 +198,62 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
             )}
           </div>
 
+          {/* Subtasks */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                <CheckSquare className="h-3 w-3" /> Subtareas ({subtasks.filter((s) => s.done).length}/{subtasks.length})
+              </label>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 gap-1.5 text-xs text-primary hover:text-primary"
+                onClick={() => setCotOpen(true)}
+              >
+                <Brain className="h-3.5 w-3.5" />
+                Planificar Pasos
+              </Button>
+            </div>
+            {subtasks.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic px-1">
+                Sin subtareas. Usa "Planificar Pasos" para generarlas con CoT.
+              </p>
+            ) : (
+              <ul className="space-y-1.5">
+                {subtasks.map((s) => (
+                  <li
+                    key={s.id}
+                    className="group flex items-start gap-2 rounded-md border bg-surface-2 px-2.5 py-2"
+                  >
+                    <button
+                      onClick={() => onToggleSubtask(columnId, task.id, s.id)}
+                      className="mt-0.5 shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {s.done ? (
+                        <CheckSquare className="h-4 w-4 text-primary" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                    </button>
+                    <span
+                      className={`flex-1 text-sm leading-snug ${
+                        s.done ? "line-through text-muted-foreground" : "text-foreground"
+                      }`}
+                    >
+                      {s.text}
+                    </span>
+                    <button
+                      onClick={() => onDeleteSubtask(columnId, task.id, s.id)}
+                      className="shrink-0 rounded p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           {/* Comments */}
           <div>
             <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
@@ -227,6 +289,13 @@ export default function TaskDetailSheet({ task, columnId, onClose, onUpdate, onA
           </div>
         </div>
       </SheetContent>
+
+      <CotAssistantDialog
+        open={cotOpen}
+        onOpenChange={setCotOpen}
+        taskTitle={task.title}
+        onConvertToSubtasks={(steps) => onAddSubtasks(columnId, task.id, steps)}
+      />
     </Sheet>
   );
 }
