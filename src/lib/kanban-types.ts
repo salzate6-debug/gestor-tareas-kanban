@@ -6,6 +6,12 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface Subtask {
+  id: string;
+  text: string;
+  done: boolean;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -14,6 +20,7 @@ export interface Task {
   tags: string[];
   dueDate: string | null;
   comments: Comment[];
+  subtasks: Subtask[];
   createdAt: string;
 }
 
