@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Loader2, Sparkles, ListPlus, RotateCcw } from "lucide-react";
+import { Brain, Loader2, Sparkles, ListPlus, RotateCcw, BookOpen, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,77 +18,37 @@ interface Props {
   onConvertToSubtasks: (steps: string[]) => void;
 }
 
-/**
- * Heuristic Chain-of-Thought generator.
- * Produces 3 logical reasoning steps based on verbs detected in the task title.
- * 100% local, no backend required.
- */
-function generateCoTSteps(title: string): string[] {
-  const t = title.trim().toLowerCase();
-  const subject = title.trim().replace(/^(crear|añadir|agregar|hacer|implementar|diseñar|construir|desarrollar|configurar)\s+/i, "");
+const COT_API_URL = "https://anime-crawlers-dairy.ngrok-free.dev/razonar";
 
-  // Pattern matching by intent
-  if (/login|auth|sesi[oó]n|registro|signup/.test(t)) {
-    return [
-      `Diseñar el formulario de "${subject}" con validaciones de email y contraseña.`,
-      `Configurar la lógica de autenticación conectando el frontend con el backend.`,
-      `Realizar pruebas de seguridad y manejo de errores (credenciales inválidas, rate limiting).`,
-    ];
-  }
-  if (/api|endpoint|backend|servicio/.test(t)) {
-    return [
-      `Definir el contrato de la API para "${subject}" (rutas, métodos, payloads).`,
-      `Implementar la lógica del endpoint con validación de entrada y autorización.`,
-      `Documentar el endpoint y escribir pruebas de integración.`,
-    ];
-  }
-  if (/dise[ñn]ar|ui|interfaz|componente|landing|p[aá]gina/.test(t)) {
-    return [
-      `Bocetar la estructura visual de "${subject}" definiendo jerarquía y espaciado.`,
-      `Implementar el componente con tokens del sistema de diseño y estados (hover, loading, error).`,
-      `Validar accesibilidad (contraste, navegación por teclado) y responsividad en móvil.`,
-    ];
-  }
-  if (/test|prueba|qa|bug|error|arreglar|fix/.test(t)) {
-    return [
-      `Reproducir y aislar el comportamiento esperado vs. el actual de "${subject}".`,
-      `Escribir un test que falle, corregir la causa raíz y verificar que pase.`,
-      `Añadir casos límite y validar que no haya regresiones en flujos relacionados.`,
-    ];
-  }
-  if (/base de datos|db|esquema|tabla|migraci[oó]n/.test(t)) {
-    return [
-      `Modelar las entidades y relaciones necesarias para "${subject}".`,
-      `Crear la migración aplicando índices y restricciones de integridad.`,
-      `Probar consultas críticas y configurar políticas de seguridad de acceso.`,
-    ];
-  }
-  if (/desplegar|deploy|publicar/.test(t)) {
-    return [
-      `Preparar variables de entorno y verificar el build de producción para "${subject}".`,
-      `Ejecutar el despliegue y validar logs en tiempo real.`,
-      `Realizar smoke tests post-deploy y configurar monitoreo de errores.`,
-    ];
-  }
-  if (/documentar|readme|gu[ií]a/.test(t)) {
-    return [
-      `Definir audiencia y alcance de la documentación de "${subject}".`,
-      `Redactar secciones clave: instalación, uso básico y ejemplos.`,
-      `Revisar con un caso de uso real y publicar en el repositorio.`,
-    ];
+interface CotResponse {
+  cot_steps?: string[];
+  grounding_source?: string;
+}
+
+async function fetchCoTSteps(title: string): Promise<CotResponse> {
+  const res = await fetch(COT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // ngrok free tier requires this header to bypass the browser warning page
+      "ngrok-skip-browser-warning": "true",
+    },
+    body: JSON.stringify({ titulo: title, title }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`El servidor respondió con estado ${res.status}`);
   }
 
-  // Generic fallback CoT
-  return [
-    `Analizar requisitos y dividir "${subject}" en componentes manejables.`,
-    `Implementar la solución paso a paso, validando cada componente individualmente.`,
-    `Probar el resultado completo, documentar decisiones y refinar según feedback.`,
-  ];
+  const data = (await res.json()) as CotResponse;
+  return data;
 }
 
 export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onConvertToSubtasks }: Props) {
-  const [phase, setPhase] = useState<"idle" | "thinking" | "revealing" | "done">("idle");
+  const [phase, setPhase] = useState<"idle" | "thinking" | "revealing" | "done" | "error">("idle");
   const [steps, setSteps] = useState<string[]>([]);
+  const [groundingSource, setGroundingSource] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const [visibleCount, setVisibleCount] = useState(0);
   const timersRef = useRef<number[]>([]);
 
@@ -97,34 +57,60 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
     timersRef.current = [];
   };
 
-  const runAssistant = () => {
+  const runAssistant = async () => {
     clearTimers();
     setPhase("thinking");
     setSteps([]);
+    setGroundingSource("");
+    setErrorMsg("");
     setVisibleCount(0);
 
-    // Simulate "thinking" delay
-    timersRef.current.push(
-      window.setTimeout(() => {
-        const generated = generateCoTSteps(taskTitle);
-        setSteps(generated);
-        setPhase("revealing");
+    try {
+      const data = await fetchCoTSteps(taskTitle);
+      const generated = Array.isArray(data.cot_steps) ? data.cot_steps.filter(Boolean) : [];
+      const source = typeof data.grounding_source === "string" ? data.grounding_source : "";
 
-        // Reveal each step with a delay
-        generated.forEach((_, i) => {
-          timersRef.current.push(
-            window.setTimeout(() => {
-              setVisibleCount(i + 1);
-              if (i === generated.length - 1) {
-                timersRef.current.push(
-                  window.setTimeout(() => setPhase("done"), 400)
-                );
-              }
-            }, 700 * (i + 1))
-          );
-        });
-      }, 1200)
-    );
+      // Log to terminal/console as requested
+      console.log("[CoT] Pasos de razonamiento:", generated);
+      if (source) console.log("[CoT] Fuente oficial (grounding_source):", source);
+
+      if (generated.length === 0) {
+        throw new Error("La respuesta no contiene 'cot_steps' válidos.");
+      }
+
+      setSteps(generated);
+      setGroundingSource(source);
+      setPhase("revealing");
+
+      // Reveal each step with a delay
+      generated.forEach((_, i) => {
+        timersRef.current.push(
+          window.setTimeout(() => {
+            setVisibleCount(i + 1);
+            if (i === generated.length - 1) {
+              timersRef.current.push(
+                window.setTimeout(() => setPhase("done"), 400)
+              );
+            }
+          }, 700 * (i + 1))
+        );
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Error desconocido";
+      console.error("[CoT] Error al contactar el servidor:", err);
+      const isLikelyCors = message.includes("Failed to fetch") || message.includes("NetworkError");
+      setErrorMsg(
+        isLikelyCors
+          ? "No se pudo conectar al servidor de razonamiento. Es probable un error de CORS: tu servidor debe responder con el header 'Access-Control-Allow-Origin: *' (o el origen de esta app) y manejar las peticiones OPTIONS preflight."
+          : `No se pudo obtener la respuesta del servidor: ${message}`
+      );
+      setPhase("error");
+      toast({
+        title: "Error en el Asistente CoT",
+        description: isLikelyCors ? "Posible error de CORS. Revisa la consola." : message,
+        variant: "destructive",
+      });
+    }
   };
 
   // Auto-run when dialog opens
@@ -135,6 +121,8 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
       clearTimers();
       setPhase("idle");
       setSteps([]);
+      setGroundingSource("");
+      setErrorMsg("");
       setVisibleCount(0);
     }
     return clearTimers;
@@ -215,8 +203,42 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
                 )}
               </motion.ol>
             )}
+
+            {phase === "error" && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-10 gap-3 text-center"
+              >
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <AlertCircle className="h-5 w-5" />
+                </span>
+                <p className="text-sm text-foreground font-medium">No se pudo generar el razonamiento</p>
+                <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">{errorMsg}</p>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
+
+        {phase === "done" && groundingSource && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex gap-2.5 rounded-lg border border-primary/20 bg-primary/5 p-3 mt-1"
+          >
+            <BookOpen className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-0.5">
+                Fuente oficial
+              </p>
+              <p className="text-xs text-foreground/80 leading-relaxed break-words">
+                {groundingSource}
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {phase === "done" && (
           <motion.div
@@ -231,6 +253,19 @@ export default function CotAssistantDialog({ open, onOpenChange, taskTitle, onCo
             <Button size="sm" className="ml-auto gap-1.5" onClick={handleConvert}>
               <ListPlus className="h-3.5 w-3.5" />
               Convertir en Subtareas
+            </Button>
+          </motion.div>
+        )}
+
+        {phase === "error" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex gap-2 pt-2 border-t"
+          >
+            <Button size="sm" className="ml-auto gap-1.5" onClick={runAssistant}>
+              <RotateCcw className="h-3.5 w-3.5" />
+              Reintentar
             </Button>
           </motion.div>
         )}
